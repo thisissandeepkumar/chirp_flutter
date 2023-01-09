@@ -37,7 +37,22 @@ class _MyAppState extends State<MyApp> {
       navigatorKey: NavigationService.instance.navigatorKey,
       title: 'Comms',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green,
+        appBarTheme: const AppBarTheme(
+          shadowColor: Colors.transparent,
+          centerTitle: false,
+          elevation: 0.0,
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.white,
+          titleTextStyle: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
+            fontSize: 26,
+          ),
+          iconTheme: IconThemeData(
+            color: Colors.green,
+          ),
+        ),
       ),
       routes: {
         "splash": (context) => const SplashScreen(),
