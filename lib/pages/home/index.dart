@@ -60,6 +60,25 @@ class _HomePageState extends State<HomePage> {
                     searchController,
                   ),
                 ),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  margin: const EdgeInsets.only(
+                    left: 15,
+                  ),
+                  child: const Text(
+                    "Messages",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                Expanded(
+                    child: Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.red,
+                  ),
+                )),
               ],
             ),
           );
