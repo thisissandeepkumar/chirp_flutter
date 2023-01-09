@@ -63,6 +63,8 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           );
+        case 1:
+          return const ProfilePage();
         default:
           return const ProfilePage();
       }
