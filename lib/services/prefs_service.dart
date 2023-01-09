@@ -5,4 +5,9 @@ class CommsSharedPreferenceService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.setString(key, value);
   }
+
+  static Future<String?> getString(String key) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(key);
+  }
 }

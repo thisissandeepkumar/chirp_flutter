@@ -1,3 +1,4 @@
+import 'package:comms_flutter/providers/auth_provider.dart';
 import 'package:comms_flutter/services/navigation_service.dart';
 import 'package:flutter/material.dart';
 
@@ -12,8 +13,13 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 1), () {
-      NavigationService.instance.navigateToReplacement("login");
+    Future.delayed(const Duration(seconds: 1), () async {
+      bool isAuthenticated = await AuthProvider.instance.checkPersistance();
+      if (isAuthenticated) {
+        NavigationService.instance.navigateToReplacement("home");
+      } else {
+        NavigationService.instance.navigateToReplacement("login");
+      }
     });
   }
 
