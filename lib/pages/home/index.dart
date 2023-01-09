@@ -15,6 +15,14 @@ class _HomePageState extends State<HomePage> {
 
   late AuthProvider authProvider;
 
+  late TextEditingController searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    searchController = TextEditingController();
+  }
+
   @override
   Widget build(BuildContext context) {
     width = MediaQuery.of(context).size.width;
@@ -35,6 +43,19 @@ class _HomePageState extends State<HomePage> {
       authProvider = Provider.of<AuthProvider>(innerContext);
       return Scaffold(
         appBar: homeAppBar(),
+        body: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 10,
+              ),
+              child: searchBar(
+                searchController,
+              ),
+            ),
+          ],
+        ),
       );
     });
   }
@@ -52,6 +73,29 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ],
+    );
+  }
+
+  // Individual Widgets
+  Widget searchBar(TextEditingController controller) {
+    return TextFormField(
+      controller: controller,
+      onChanged: (String? searchValue) {
+        // TODO: Search Logic to be implemented
+      },
+      decoration: InputDecoration(
+        hintText: "Search",
+        hintStyle: const TextStyle(
+          color: Colors.grey,
+        ),
+        prefixIcon: const Icon(
+          Icons.search,
+          color: Colors.grey,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
     );
   }
 }
