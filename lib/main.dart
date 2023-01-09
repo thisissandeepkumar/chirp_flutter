@@ -1,3 +1,4 @@
+import 'package:comms_flutter/pages/home/index.dart';
 import 'package:comms_flutter/pages/login/index.dart';
 import 'package:comms_flutter/pages/splash/index.dart';
 import 'package:comms_flutter/services/navigation_service.dart';
@@ -41,6 +42,7 @@ class _MyAppState extends State<MyApp> {
       routes: {
         "splash": (context) => const SplashScreen(),
         "login": (context) => const LoginScreen(),
+        "home": (context) => const HomePage(),
       },
       initialRoute: "splash",
     );
