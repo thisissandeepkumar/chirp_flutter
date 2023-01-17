@@ -48,4 +48,9 @@ class ChatroomProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  void setCurrentChatroom(Chatroom chatroom) {
+    currentChatroom = chatroom;
+    notifyListeners();
+  }
 }

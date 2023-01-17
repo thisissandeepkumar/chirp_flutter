@@ -89,8 +89,10 @@ class _HomePageState extends State<HomePage> {
                               itemBuilder: (mainContext, int index) {
                                 return ListTile(
                                   onTap: () {
-                                    print(chatroomProvider.chatrooms[index]
-                                        .toJson());
+                                    chatroomProvider.setCurrentChatroom(
+                                        chatroomProvider.chatrooms[index]);
+                                    NavigationService.instance
+                                        .navigateTo("chatroom");
                                   },
                                   title: Text(
                                     chatroomProvider.chatrooms[index].isGroup

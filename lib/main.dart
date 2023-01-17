@@ -1,3 +1,4 @@
+import 'package:comms_flutter/pages/chatroom/index.dart';
 import 'package:comms_flutter/pages/home/index.dart';
 import 'package:comms_flutter/pages/login/index.dart';
 import 'package:comms_flutter/pages/splash/index.dart';
@@ -58,6 +59,7 @@ class _MyAppState extends State<MyApp> {
         "splash": (context) => const SplashScreen(),
         "login": (context) => const LoginScreen(),
         "home": (context) => const HomePage(),
+        "chatroom": (context) => const ChatroomPage(),
       },
       initialRoute: "splash",
     );
