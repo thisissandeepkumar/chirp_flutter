@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:comms_flutter/constants.dart';
 import 'package:comms_flutter/models/account.dart';
+import 'package:comms_flutter/services/navigation_service.dart';
 import 'package:comms_flutter/services/prefs_service.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -35,7 +36,6 @@ class AuthProvider extends ChangeNotifier {
               headers: {
             "Content-Type": "application/json",
           });
-      print(response.body);
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body) as Map<String, dynamic>;
         currentUser = Account.fromJson(data["user"]);
@@ -45,7 +45,6 @@ class AuthProvider extends ChangeNotifier {
       }
     } catch (e) {
       authStatus = AuthStatus.isError;
-      print(e);
     }
     notifyListeners();
   }
@@ -54,21 +53,25 @@ class AuthProvider extends ChangeNotifier {
     String? persistedToken =
         await CommsSharedPreferenceService.getString("token");
     if (persistedToken != null) {
-      // TODO: Implement check persistance using APIs
-      authStatus = AuthStatus.isAuthenticated;
-      currentUser = Account(
-        id: "jubnsidb80wehsyvc7afs76f6",
-        firstName: "John",
-        lastName: "Doe",
-        email: "john.doe@gmail.com",
-        createdAt: DateTime.now(),
-      );
-      token = persistedToken;
-      //
-      notifyListeners();
-      return true;
+      http.Response response = await http
+          .get(Uri.parse("$chatCoreHost/api/account/v1/persistance"), headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $persistedToken"
+      });
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body) as Map<String, dynamic>;
+        currentUser = Account.fromJson(data);
+        authStatus = AuthStatus.isAuthenticated;
+        return true;
+      } else {
+        authStatus = AuthStatus.isUnauthenticated;
+        NavigationService.instance.navigateToReplacement("login");
+        notifyListeners();
+        return false;
+      }
     } else {
       authStatus = AuthStatus.isUnauthenticated;
+      NavigationService.instance.navigateToReplacement("login");
       notifyListeners();
       return false;
     }
