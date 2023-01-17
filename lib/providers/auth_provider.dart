@@ -62,6 +62,7 @@ class AuthProvider extends ChangeNotifier {
         var data = jsonDecode(response.body) as Map<String, dynamic>;
         currentUser = Account.fromJson(data);
         authStatus = AuthStatus.isAuthenticated;
+        token = persistedToken;
         return true;
       } else {
         authStatus = AuthStatus.isUnauthenticated;

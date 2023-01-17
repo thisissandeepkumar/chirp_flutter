@@ -1,5 +1,6 @@
 import 'package:comms_flutter/pages/profile/index.dart';
 import 'package:comms_flutter/providers/auth_provider.dart';
+import 'package:comms_flutter/providers/chatroom_provider.dart';
 import 'package:comms_flutter/services/navigation_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +26,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     searchController = TextEditingController();
+    ChatroomProvider.instance.fetchChatrooms();
   }
 
   @override
