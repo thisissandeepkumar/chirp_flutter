@@ -10,4 +10,13 @@ class CommsSharedPreferenceService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(key);
   }
+
+  static Future<void> clear(String? key) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (key != null) {
+      prefs.remove(key);
+    } else {
+      prefs.clear();
+    }
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:comms_flutter/pages/profile/index.dart';
 import 'package:comms_flutter/providers/auth_provider.dart';
+import 'package:comms_flutter/services/navigation_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -97,7 +98,10 @@ class _HomePageState extends State<HomePage> {
       ),
       actions: [
         IconButton(
-          onPressed: () {},
+          onPressed: () async {
+            await authProvider.logout();
+            NavigationService.instance.navigateToReplacement("login");
+          },
           icon: const Icon(
             Icons.message_rounded,
           ),

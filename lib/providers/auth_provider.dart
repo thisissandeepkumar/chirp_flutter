@@ -59,4 +59,12 @@ class AuthProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  Future<void> logout() async {
+    authStatus = AuthStatus.isUnauthenticated;
+    currentUser = null;
+    token = null;
+    await CommsSharedPreferenceService.clear("token");
+    notifyListeners();
+  }
 }
