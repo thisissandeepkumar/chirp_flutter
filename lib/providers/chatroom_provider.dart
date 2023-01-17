@@ -34,8 +34,7 @@ class ChatroomProvider extends ChangeNotifier {
       });
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
-        chatrooms =
-            (data['data'] as List).map((e) => Chatroom.fromJson(e)).toList();
+        chatrooms = (data as List).map((e) => Chatroom.fromJson(e)).toList();
         state = ChatroomState.loaded;
         notifyListeners();
       } else {

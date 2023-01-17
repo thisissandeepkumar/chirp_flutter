@@ -17,6 +17,7 @@ class _HomePageState extends State<HomePage> {
   late double height;
 
   late AuthProvider authProvider;
+  late ChatroomProvider chatroomProvider;
 
   late TextEditingController searchController;
 
@@ -40,6 +41,7 @@ class _HomePageState extends State<HomePage> {
             ChangeNotifierProvider.value(
               value: AuthProvider.instance,
             ),
+            ChangeNotifierProvider.value(value: ChatroomProvider.instance),
           ],
           child: _mainUI(),
         ));
@@ -48,6 +50,7 @@ class _HomePageState extends State<HomePage> {
   Widget _mainUI() {
     return Builder(builder: (BuildContext innerContext) {
       authProvider = Provider.of<AuthProvider>(innerContext);
+      chatroomProvider = Provider.of<ChatroomProvider>(innerContext);
       switch (_selectedPage) {
         case 0:
           return Scaffold(
@@ -78,9 +81,33 @@ class _HomePageState extends State<HomePage> {
                 ),
                 Expanded(
                     child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                  ),
+                  child: chatroomProvider.state == ChatroomState.loading
+                      ? const CircularProgressIndicator()
+                      : chatroomProvider.state == ChatroomState.error
+                          ? const Text("Error")
+                          : ListView.builder(
+                              itemBuilder: (mainContext, int index) {
+                                return ListTile(
+                                  onTap: () {
+                                    print(chatroomProvider.chatrooms[index]
+                                        .toJson());
+                                  },
+                                  title: Text(
+                                    chatroomProvider.chatrooms[index].isGroup
+                                        ? chatroomProvider
+                                            .chatrooms[index].title!
+                                        : chatroomProvider
+                                            .chatrooms[index].participants
+                                            .where((element) =>
+                                                element.id !=
+                                                authProvider.currentUser!.id)
+                                            .first
+                                            .firstName,
+                                  ),
+                                );
+                              },
+                              itemCount: chatroomProvider.chatrooms.length,
+                            ),
                 )),
               ],
             ),
