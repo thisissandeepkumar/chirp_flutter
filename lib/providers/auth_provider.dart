@@ -1,6 +1,10 @@
+import 'dart:convert';
+
+import 'package:comms_flutter/constants.dart';
 import 'package:comms_flutter/models/account.dart';
 import 'package:comms_flutter/services/prefs_service.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 enum AuthStatus {
   isError,
@@ -21,18 +25,28 @@ class AuthProvider extends ChangeNotifier {
   Future<void> login(String email, String password) async {
     authStatus = AuthStatus.isAuthenticating;
     notifyListeners();
-    // TODO: Implement login using APIs
-    authStatus = AuthStatus.isAuthenticated;
-    currentUser = Account(
-      id: "jubnsidb80wehsyvc7afs76f6",
-      firstName: "John",
-      lastName: "Doe",
-      email: "john.doe@gmail.com",
-      createdAt: DateTime.now(),
-    );
-    CommsSharedPreferenceService.setString("token", "insdch98shdcsd");
-    token = "insdch98shdcsd";
-    //
+    try {
+      http.Response response =
+          await http.post(Uri.parse("$chatCoreHost/api/account/v1/login"),
+              body: jsonEncode({
+                "email": email,
+                "password": password,
+              }),
+              headers: {
+            "Content-Type": "application/json",
+          });
+      print(response.body);
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body) as Map<String, dynamic>;
+        currentUser = Account.fromJson(data["user"]);
+        token = data["token"];
+        authStatus = AuthStatus.isAuthenticated;
+        await CommsSharedPreferenceService.setString("token", token!);
+      }
+    } catch (e) {
+      authStatus = AuthStatus.isError;
+      print(e);
+    }
     notifyListeners();
   }
 

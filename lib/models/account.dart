@@ -15,7 +15,7 @@ class Account {
 
   factory Account.fromJson(Map<String, dynamic> json) {
     return Account(
-      id: json['id'],
+      id: json['_id'],
       firstName: json['firstName'],
       lastName: json['lastName'],
       email: json['email'],
@@ -25,7 +25,7 @@ class Account {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      '_id': id,
       'firstName': firstName,
       'lastName': lastName,
       'email': email,
