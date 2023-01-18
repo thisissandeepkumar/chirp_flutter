@@ -50,30 +50,35 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> checkPersistance() async {
-    String? persistedToken =
-        await CommsSharedPreferenceService.getString("token");
-    if (persistedToken != null) {
-      http.Response response = await http
-          .get(Uri.parse("$chatCoreHost/api/account/v1/persistance"), headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $persistedToken"
-      });
-      if (response.statusCode == 200) {
-        var data = jsonDecode(response.body) as Map<String, dynamic>;
-        currentUser = Account.fromJson(data);
-        authStatus = AuthStatus.isAuthenticated;
-        token = persistedToken;
-        return true;
+    try {
+      String? persistedToken =
+          await CommsSharedPreferenceService.getString("token");
+      if (persistedToken != null) {
+        http.Response response = await http.get(
+            Uri.parse("$chatCoreHost/api/account/v1/persistance"),
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer $persistedToken"
+            });
+        if (response.statusCode == 200) {
+          var data = jsonDecode(response.body) as Map<String, dynamic>;
+          currentUser = Account.fromJson(data);
+          authStatus = AuthStatus.isAuthenticated;
+          token = persistedToken;
+          return true;
+        } else {
+          authStatus = AuthStatus.isUnauthenticated;
+          NavigationService.instance.navigateToReplacement("login");
+          notifyListeners();
+          return false;
+        }
       } else {
         authStatus = AuthStatus.isUnauthenticated;
         NavigationService.instance.navigateToReplacement("login");
         notifyListeners();
         return false;
       }
-    } else {
-      authStatus = AuthStatus.isUnauthenticated;
-      NavigationService.instance.navigateToReplacement("login");
-      notifyListeners();
+    } catch (e) {
       return false;
     }
   }

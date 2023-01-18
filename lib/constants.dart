@@ -1,1 +1,1 @@
-const String chatCoreHost = "http://192.168.68.140:3000";
+const String chatCoreHost = "http://10.0.0.6:3000";
