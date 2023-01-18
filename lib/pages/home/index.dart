@@ -1,3 +1,4 @@
+import 'package:comms_flutter/models/account.dart';
 import 'package:comms_flutter/pages/profile/index.dart';
 import 'package:comms_flutter/providers/auth_provider.dart';
 import 'package:comms_flutter/providers/chatroom_provider.dart';
@@ -87,6 +88,17 @@ class _HomePageState extends State<HomePage> {
                           ? const Text("Error")
                           : ListView.builder(
                               itemBuilder: (mainContext, int index) {
+                                ;
+                                late Account chatroom;
+                                if (!chatroomProvider
+                                    .chatrooms[index].isGroup) {
+                                  chatroom = chatroomProvider
+                                      .chatrooms[index].participants
+                                      .where((element) =>
+                                          element.id !=
+                                          authProvider.currentUser!.id)
+                                      .first;
+                                }
                                 return ListTile(
                                   onTap: () {
                                     chatroomProvider.setCurrentChatroom(
@@ -98,13 +110,7 @@ class _HomePageState extends State<HomePage> {
                                     chatroomProvider.chatrooms[index].isGroup
                                         ? chatroomProvider
                                             .chatrooms[index].title!
-                                        : chatroomProvider
-                                            .chatrooms[index].participants
-                                            .where((element) =>
-                                                element.id !=
-                                                authProvider.currentUser!.id)
-                                            .first
-                                            .firstName,
+                                        : "${chatroom.firstName} ${chatroom.lastName}",
                                   ),
                                 );
                               },

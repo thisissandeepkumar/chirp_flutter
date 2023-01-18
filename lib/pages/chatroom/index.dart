@@ -1,3 +1,4 @@
+import 'package:comms_flutter/models/account.dart';
 import 'package:comms_flutter/providers/auth_provider.dart';
 import 'package:comms_flutter/providers/chatroom_provider.dart';
 import 'package:flutter/material.dart';
@@ -31,16 +32,19 @@ class _ChatroomPageState extends State<ChatroomPage> {
     return Builder(builder: (BuildContext mainContext) {
       authProvider = Provider.of<AuthProvider>(mainContext);
       chatroomProvider = Provider.of<ChatroomProvider>(mainContext);
+      late String title;
+      if (chatroomProvider.currentChatroom!.isGroup) {
+        title = chatroomProvider.currentChatroom!.title!;
+      } else {
+        Account otherAccount = chatroomProvider.currentChatroom!.participants
+            .where((element) => element.id != authProvider.currentUser!.id)
+            .first;
+        title = "${otherAccount.firstName} ${otherAccount.lastName}";
+      }
       return Scaffold(
         appBar: AppBar(
           title: Text(
-            chatroomProvider.currentChatroom!.isGroup
-                ? chatroomProvider.currentChatroom!.title!
-                : chatroomProvider.currentChatroom!.participants
-                    .where(
-                        (element) => element.id != authProvider.currentUser!.id)
-                    .first
-                    .firstName,
+            title,
             style: const TextStyle(
               fontWeight: FontWeight.w500,
             ),
