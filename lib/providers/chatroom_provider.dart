@@ -24,7 +24,6 @@ class ChatroomProvider extends ChangeNotifier {
 
   Future<void> fetchChatrooms() async {
     state = ChatroomState.loading;
-    notifyListeners();
 
     try {
       http.Response response =

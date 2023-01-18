@@ -17,15 +17,18 @@ class Message {
     required this.type,
     this.textContent,
     DateTime? createdAt,
-  }) : createdAt = createdAt ?? DateTime.now();
+  });
 
-  Message.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        chatroomId = json['chatroomId'],
-        senderId = json['senderId'],
-        type = MessageType.values[json['type']],
-        textContent = json['textContent'],
-        createdAt = DateTime.parse(json['createdAt']);
+  factory Message.fromJSON(Map<String, dynamic> data) {
+    return Message(
+      chatroomId: data["chatroomId"],
+      senderId: data["senderId"],
+      type: MessageType.text,
+      createdAt: DateTime.parse(data["createdAt"]),
+      textContent: data["textContent"],
+      id: data["_id"],
+    );
+  }
 
   Map<String, dynamic> toJSON() {
     Map<String, dynamic> json = {

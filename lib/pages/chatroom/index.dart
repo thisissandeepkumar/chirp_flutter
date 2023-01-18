@@ -1,6 +1,7 @@
 import 'package:comms_flutter/models/account.dart';
 import 'package:comms_flutter/providers/auth_provider.dart';
 import 'package:comms_flutter/providers/chatroom_provider.dart';
+import 'package:comms_flutter/providers/message_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -14,6 +15,19 @@ class ChatroomPage extends StatefulWidget {
 class _ChatroomPageState extends State<ChatroomPage> {
   late AuthProvider authProvider;
   late ChatroomProvider chatroomProvider;
+  late MessageProvider messageProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    MessageProvider.instance.fetchMessages();
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    MessageProvider.instance.destroyChatroom();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +36,7 @@ class _ChatroomPageState extends State<ChatroomPage> {
         providers: [
           ChangeNotifierProvider.value(value: AuthProvider.instance),
           ChangeNotifierProvider.value(value: ChatroomProvider.instance),
+          ChangeNotifierProvider.value(value: MessageProvider.instance),
         ],
         child: _mainUI(),
       ),
@@ -32,6 +47,7 @@ class _ChatroomPageState extends State<ChatroomPage> {
     return Builder(builder: (BuildContext mainContext) {
       authProvider = Provider.of<AuthProvider>(mainContext);
       chatroomProvider = Provider.of<ChatroomProvider>(mainContext);
+      messageProvider = Provider.of<MessageProvider>(mainContext);
       late String title;
       if (chatroomProvider.currentChatroom!.isGroup) {
         title = chatroomProvider.currentChatroom!.title!;
@@ -50,6 +66,11 @@ class _ChatroomPageState extends State<ChatroomPage> {
             ),
           ),
         ),
+        body: messageProvider.state == MessageState.loading
+            ? const CircularProgressIndicator()
+            : messageProvider.state == MessageState.loaded
+                ? const Text("ds")
+                : const Text("error"),
       );
     });
   }

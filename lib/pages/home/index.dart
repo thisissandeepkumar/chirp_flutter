@@ -88,7 +88,6 @@ class _HomePageState extends State<HomePage> {
                           ? const Text("Error")
                           : ListView.builder(
                               itemBuilder: (mainContext, int index) {
-                                ;
                                 late Account chatroom;
                                 if (!chatroomProvider
                                     .chatrooms[index].isGroup) {
