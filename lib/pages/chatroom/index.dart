@@ -23,12 +23,18 @@ class _ChatroomPageState extends State<ChatroomPage> {
   late io.Socket socket;
 
   late TextEditingController textContentController;
+  ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     textContentController = TextEditingController();
-    MessageProvider.instance.fetchMessages();
+    MessageProvider.instance.fetchMessages().then((_) {
+      Future.delayed(const Duration(milliseconds: 20), () {
+        scrollController.animateTo(scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 200), curve: Curves.easeOut);
+      });
+    });
     socket = io.io(
       "$chatCoreHost?room=${ChatroomProvider.instance.currentChatroom!.id}",
       io.OptionBuilder()
@@ -41,7 +47,9 @@ class _ChatroomPageState extends State<ChatroomPage> {
     );
     socket.connect();
     socket.on("message", (data) {
+      // print(data);
       messageProvider.onMessageReceived(Message.fromJSON(data));
+      scrollController.jumpTo(double.infinity);
     });
   }
 
@@ -139,7 +147,9 @@ class _ChatroomPageState extends State<ChatroomPage> {
   Widget messagesPreview(
       BuildContext buildContext, MessageProvider messageProvider) {
     return ListView.builder(
+      controller: scrollController,
       itemCount: messageProvider.messages.length,
+      // reverse: true,
       itemBuilder: (buildContext, int index) {
         return Align(
           alignment: messageProvider.messages[index].senderId ==
