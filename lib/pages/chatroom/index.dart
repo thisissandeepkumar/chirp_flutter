@@ -69,9 +69,54 @@ class _ChatroomPageState extends State<ChatroomPage> {
         body: messageProvider.state == MessageState.loading
             ? const CircularProgressIndicator()
             : messageProvider.state == MessageState.loaded
-                ? const Text("ds")
+                ? Container(
+                    padding: const EdgeInsets.all(10),
+                    child: messagesPreview(mainContext, messageProvider),
+                  )
                 : const Text("error"),
       );
     });
+  }
+
+  Widget messagesPreview(
+      BuildContext buildContext, MessageProvider messageProvider) {
+    return ListView.builder(
+      itemCount: messageProvider.messages.length,
+      itemBuilder: (buildContext, int index) {
+        return Align(
+          alignment: messageProvider.messages[index].senderId ==
+                  AuthProvider.instance.currentUser!.id
+              ? Alignment.centerRight
+              : Alignment.centerLeft,
+          child: Container(
+            margin: const EdgeInsets.only(
+              bottom: 10,
+            ),
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.grey,
+              borderRadius: messageProvider.messages[index].senderId ==
+                      AuthProvider.instance.currentUser!.id
+                  ? const BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      bottomLeft: Radius.circular(10),
+                      bottomRight: Radius.circular(10),
+                    )
+                  : const BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10),
+                      bottomRight: Radius.circular(10),
+                    ),
+            ),
+            child: Text(
+              messageProvider.messages[index].textContent!,
+              // style: const TextStyle(
+              //   height: 35,
+              // ),
+            ),
+          ),
+        );
+      },
+    );
   }
 }
