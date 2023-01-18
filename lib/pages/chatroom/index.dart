@@ -71,7 +71,34 @@ class _ChatroomPageState extends State<ChatroomPage> {
             : messageProvider.state == MessageState.loaded
                 ? Container(
                     padding: const EdgeInsets.all(10),
-                    child: messagesPreview(mainContext, messageProvider),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          flex: 9,
+                          child: messagesPreview(mainContext, messageProvider),
+                        ),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 8,
+                                child: TextFormField(
+                                  decoration: const InputDecoration(
+                                    hintText: "Type a message",
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: IconButton(
+                                  onPressed: () async {},
+                                  icon: const Icon(Icons.send),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   )
                 : const Text("error"),
       );

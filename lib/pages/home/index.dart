@@ -135,8 +135,8 @@ class _HomePageState extends State<HomePage> {
       actions: [
         IconButton(
           onPressed: () async {
-            await authProvider.logout();
             NavigationService.instance.navigateToReplacement("login");
+            await authProvider.logout();
           },
           icon: const Icon(
             Icons.message_rounded,
