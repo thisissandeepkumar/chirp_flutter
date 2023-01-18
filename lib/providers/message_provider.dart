@@ -50,4 +50,9 @@ class MessageProvider extends ChangeNotifier {
     messages = [];
     state = MessageState.idle;
   }
+
+  void onMessageReceived(Message message) {
+    messages.add(message);
+    notifyListeners();
+  }
 }

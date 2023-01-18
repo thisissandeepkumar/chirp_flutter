@@ -1,9 +1,12 @@
+import 'package:comms_flutter/constants.dart';
 import 'package:comms_flutter/models/account.dart';
+import 'package:comms_flutter/models/message.dart';
 import 'package:comms_flutter/providers/auth_provider.dart';
 import 'package:comms_flutter/providers/chatroom_provider.dart';
 import 'package:comms_flutter/providers/message_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class ChatroomPage extends StatefulWidget {
   const ChatroomPage({super.key});
@@ -17,10 +20,29 @@ class _ChatroomPageState extends State<ChatroomPage> {
   late ChatroomProvider chatroomProvider;
   late MessageProvider messageProvider;
 
+  late io.Socket socket;
+
+  late TextEditingController textContentController;
+
   @override
   void initState() {
     super.initState();
+    textContentController = TextEditingController();
     MessageProvider.instance.fetchMessages();
+    socket = io.io(
+      "$chatCoreHost?room=${ChatroomProvider.instance.currentChatroom!.id}",
+      io.OptionBuilder()
+          .setTransports(["websocket"])
+          .disableAutoConnect()
+          .setExtraHeaders({
+            "Authorization": "Bearer ${AuthProvider.instance.token}",
+          })
+          .build(),
+    );
+    socket.connect();
+    socket.on("message", (data) {
+      messageProvider.onMessageReceived(Message.fromJSON(data));
+    });
   }
 
   @override
@@ -83,6 +105,7 @@ class _ChatroomPageState extends State<ChatroomPage> {
                               Expanded(
                                 flex: 8,
                                 child: TextFormField(
+                                  controller: textContentController,
                                   decoration: const InputDecoration(
                                     hintText: "Type a message",
                                   ),
@@ -90,7 +113,15 @@ class _ChatroomPageState extends State<ChatroomPage> {
                               ),
                               Expanded(
                                 child: IconButton(
-                                  onPressed: () async {},
+                                  onPressed: () async {
+                                    if (textContentController.text.isNotEmpty) {
+                                      socket.emit("message", {
+                                        "type": "text",
+                                        "textContent":
+                                            textContentController.text
+                                      });
+                                    }
+                                  },
                                   icon: const Icon(Icons.send),
                                 ),
                               ),
