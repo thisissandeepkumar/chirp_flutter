@@ -5,6 +5,7 @@ import 'package:comms_flutter/providers/auth_provider.dart';
 import 'package:comms_flutter/providers/chatroom_provider.dart';
 import 'package:comms_flutter/providers/message_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:objectid/objectid.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
@@ -25,16 +26,13 @@ class _ChatroomPageState extends State<ChatroomPage> {
   late TextEditingController textContentController;
   ScrollController scrollController = ScrollController();
 
+  int eventCount = 0;
+
   @override
   void initState() {
     super.initState();
     textContentController = TextEditingController();
-    MessageProvider.instance.fetchMessages().then((_) {
-      // Future.delayed(const Duration(milliseconds: 20), () {
-      //   scrollController.animateTo(scrollController.position.maxScrollExtent,
-      //       duration: const Duration(milliseconds: 200), curve: Curves.easeOut);
-      // });
-    });
+    MessageProvider.instance.fetchMessages();
     socket = io.io(
       "$chatCoreHost?room=${ChatroomProvider.instance.currentChatroom!.id}",
       io.OptionBuilder()
@@ -47,8 +45,9 @@ class _ChatroomPageState extends State<ChatroomPage> {
     );
     socket.connect();
     socket.on("message", (data) {
-      // print(data);
+      eventCount++;
       messageProvider.onMessageReceived(Message.fromJSON(data));
+      print(eventCount);
     });
   }
 
@@ -104,7 +103,50 @@ class _ChatroomPageState extends State<ChatroomPage> {
                       children: [
                         Expanded(
                           flex: 9,
-                          child: messagesPreview(mainContext, messageProvider),
+                          child: ListView.builder(
+                            controller: scrollController,
+                            itemCount: messageProvider.messages.length,
+                            reverse: true,
+                            itemBuilder: (mainContext, int index) {
+                              return Align(
+                                alignment: messageProvider
+                                            .messages[index].senderId ==
+                                        AuthProvider.instance.currentUser!.id
+                                    ? Alignment.centerRight
+                                    : Alignment.centerLeft,
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                    bottom: 10,
+                                  ),
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey,
+                                    borderRadius: messageProvider
+                                                .messages[index].senderId ==
+                                            AuthProvider
+                                                .instance.currentUser!.id
+                                        ? const BorderRadius.only(
+                                            topLeft: Radius.circular(10),
+                                            bottomLeft: Radius.circular(10),
+                                            bottomRight: Radius.circular(10),
+                                          )
+                                        : const BorderRadius.only(
+                                            topLeft: Radius.circular(10),
+                                            topRight: Radius.circular(10),
+                                            bottomRight: Radius.circular(10),
+                                          ),
+                                  ),
+                                  child: Text(
+                                    messageProvider
+                                        .messages[index].textContent!,
+                                    // style: const TextStyle(
+                                    //   height: 35,
+                                    // ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                         Expanded(
                           child: Row(
@@ -127,6 +169,15 @@ class _ChatroomPageState extends State<ChatroomPage> {
                                         "textContent":
                                             textContentController.text
                                       });
+                                      messageProvider.onMessageReceived(Message(
+                                        chatroomId: ObjectId.fromTimestamp(
+                                                DateTime.now())
+                                            .hexString,
+                                        senderId: authProvider.currentUser!.id,
+                                        type: MessageType.text,
+                                        textContent: textContentController.text,
+                                      ));
+                                      textContentController.clear();
                                     }
                                   },
                                   icon: const Icon(Icons.send),
@@ -143,47 +194,8 @@ class _ChatroomPageState extends State<ChatroomPage> {
     });
   }
 
-  Widget messagesPreview(
-      BuildContext buildContext, MessageProvider messageProvider) {
-    return ListView.builder(
-      controller: scrollController,
-      itemCount: messageProvider.messages.length,
-      reverse: true,
-      itemBuilder: (buildContext, int index) {
-        return Align(
-          alignment: messageProvider.messages[index].senderId ==
-                  AuthProvider.instance.currentUser!.id
-              ? Alignment.centerRight
-              : Alignment.centerLeft,
-          child: Container(
-            margin: const EdgeInsets.only(
-              bottom: 10,
-            ),
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.grey,
-              borderRadius: messageProvider.messages[index].senderId ==
-                      AuthProvider.instance.currentUser!.id
-                  ? const BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      bottomLeft: Radius.circular(10),
-                      bottomRight: Radius.circular(10),
-                    )
-                  : const BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                      bottomRight: Radius.circular(10),
-                    ),
-            ),
-            child: Text(
-              messageProvider.messages[index].textContent!,
-              // style: const TextStyle(
-              //   height: 35,
-              // ),
-            ),
-          ),
-        );
-      },
-    );
-  }
+  // Widget messagesPreview(
+  //     BuildContext buildContext, MessageProvider messageProvider) {
+  //   return
+  // }
 }

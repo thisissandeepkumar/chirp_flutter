@@ -53,7 +53,7 @@ class MessageProvider extends ChangeNotifier {
   }
 
   void onMessageReceived(Message message) {
-    messages.add(message);
+    messages.insert(0, message);
     notifyListeners();
   }
 }
