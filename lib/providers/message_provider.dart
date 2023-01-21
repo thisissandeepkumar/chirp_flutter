@@ -40,7 +40,6 @@ class MessageProvider extends ChangeNotifier {
           notifyListeners();
         }
       } catch (e) {
-        print(e);
         state = MessageState.error;
         notifyListeners();
       }

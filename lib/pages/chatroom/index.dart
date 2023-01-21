@@ -47,7 +47,6 @@ class _ChatroomPageState extends State<ChatroomPage> {
     socket.on("message", (data) {
       eventCount++;
       messageProvider.onMessageReceived(Message.fromJSON(data));
-      print(eventCount);
     });
   }
 
