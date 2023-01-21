@@ -16,7 +16,7 @@ class Message {
     required this.senderId,
     required this.type,
     this.textContent,
-    DateTime? createdAt,
+    this.createdAt,
   });
 
   factory Message.fromJSON(Map<String, dynamic> data) {
@@ -24,17 +24,23 @@ class Message {
       chatroomId: data["chatroomId"],
       senderId: data["senderId"],
       type: MessageType.text,
-      createdAt: DateTime.parse(data["createdAt"]),
+      createdAt: DateTime.parse(data["createdAt"].toString()),
       textContent: data["textContent"],
       id: data["_id"],
     );
   }
 
   Map<String, dynamic> toJSON() {
+    late String type;
+    switch (this.type) {
+      case MessageType.text:
+        type = "text";
+        break;
+    }
     Map<String, dynamic> json = {
       'chatroomId': chatroomId,
       'senderId': senderId,
-      'type': type.index,
+      'type': type,
       'textContent': textContent,
     };
     if (id != null) {

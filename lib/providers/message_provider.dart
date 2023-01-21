@@ -32,6 +32,7 @@ class MessageProvider extends ChangeNotifier {
         if (response.statusCode == 200) {
           var data = jsonDecode(response.body) as List<dynamic>;
           messages = data.map((e) => Message.fromJSON(e)).toList();
+          messages.sort((b, a) => a.createdAt!.compareTo(b.createdAt!));
           state = MessageState.loaded;
           notifyListeners();
         } else {
