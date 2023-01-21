@@ -36,95 +36,105 @@ class _HomePageState extends State<HomePage> {
     width = MediaQuery.of(context).size.width;
     height = MediaQuery.of(context).size.height;
     return Scaffold(
-        bottomNavigationBar: homeNavigationBar(),
         body: MultiProvider(
-          providers: [
-            ChangeNotifierProvider.value(
-              value: AuthProvider.instance,
-            ),
-            ChangeNotifierProvider.value(value: ChatroomProvider.instance),
-          ],
-          child: _mainUI(),
-        ));
+      providers: [
+        ChangeNotifierProvider.value(
+          value: AuthProvider.instance,
+        ),
+        ChangeNotifierProvider.value(value: ChatroomProvider.instance),
+      ],
+      child: _mainUI(),
+    ));
   }
 
   Widget _mainUI() {
     return Builder(builder: (BuildContext innerContext) {
       authProvider = Provider.of<AuthProvider>(innerContext);
       chatroomProvider = Provider.of<ChatroomProvider>(innerContext);
-      switch (_selectedPage) {
-        case 0:
-          return Scaffold(
-            appBar: homeAppBar(),
-            body: Column(
-              children: [
-                Container(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
-                  ),
-                  child: searchBar(
-                    searchController,
-                  ),
-                ),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  margin: const EdgeInsets.only(
-                    left: 15,
-                  ),
-                  child: const Text(
-                    "Messages",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                Expanded(
-                    child: Container(
-                  child: chatroomProvider.state == ChatroomState.loading
-                      ? const CircularProgressIndicator()
-                      : chatroomProvider.state == ChatroomState.error
-                          ? const Text("Error")
-                          : ListView.builder(
-                              itemBuilder: (mainContext, int index) {
-                                late Account chatroom;
-                                if (!chatroomProvider
-                                    .chatrooms[index].isGroup) {
-                                  chatroom = chatroomProvider
-                                      .chatrooms[index].participants
-                                      .where((element) =>
-                                          element.id !=
-                                          authProvider.currentUser!.id)
-                                      .first;
-                                }
-                                return ListTile(
-                                  onTap: () {
-                                    chatroomProvider.setCurrentChatroom(
-                                        chatroomProvider.chatrooms[index]);
-                                    NavigationService.instance
-                                        .navigateTo("chatroom");
-                                  },
-                                  title: Text(
-                                    chatroomProvider.chatrooms[index].isGroup
-                                        ? chatroomProvider
-                                            .chatrooms[index].title!
-                                        : "${chatroom.firstName} ${chatroom.lastName}",
-                                  ),
-                                );
-                              },
-                              itemCount: chatroomProvider.chatrooms.length,
-                            ),
-                )),
-              ],
-            ),
-          );
-        case 1:
-          return const ProfilePage();
-        default:
-          return const ProfilePage();
-      }
+      return Scaffold(
+        appBar: homeAppBar(),
+        bottomNavigationBar: homeNavigationBar(),
+        body: _centerPage(),
+      );
+      // switch (_selectedPage) {
+      //   case 0:
+      //     return
+      //   case 1:
+      //     return const ProfilePage();
+      //   default:
+      //     return const ProfilePage();
+      // }
     });
+  }
+
+  Widget _centerPage() {
+    switch (_selectedPage) {
+      case 0:
+        return Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 10,
+              ),
+              child: searchBar(
+                searchController,
+              ),
+            ),
+            Container(
+              alignment: Alignment.centerLeft,
+              margin: const EdgeInsets.only(
+                left: 15,
+              ),
+              child: const Text(
+                "Messages",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            Expanded(
+                child: Container(
+              child: chatroomProvider.state == ChatroomState.loading
+                  ? const CircularProgressIndicator()
+                  : chatroomProvider.state == ChatroomState.error
+                      ? const Text("Error")
+                      : ListView.builder(
+                          itemBuilder: (mainContext, int index) {
+                            late Account chatroom;
+                            if (!chatroomProvider.chatrooms[index].isGroup) {
+                              chatroom = chatroomProvider
+                                  .chatrooms[index].participants
+                                  .where((element) =>
+                                      element.id !=
+                                      authProvider.currentUser!.id)
+                                  .first;
+                            }
+                            return ListTile(
+                              onTap: () {
+                                chatroomProvider.setCurrentChatroom(
+                                    chatroomProvider.chatrooms[index]);
+                                NavigationService.instance
+                                    .navigateTo("chatroom");
+                              },
+                              title: Text(
+                                chatroomProvider.chatrooms[index].isGroup
+                                    ? chatroomProvider.chatrooms[index].title!
+                                    : "${chatroom.firstName} ${chatroom.lastName}",
+                              ),
+                            );
+                          },
+                          itemCount: chatroomProvider.chatrooms.length,
+                        ),
+            )),
+          ],
+        );
+      case 1:
+        return const ProfilePage();
+      default:
+        return const ProfilePage();
+    }
   }
 
   PreferredSizeWidget homeAppBar() {
