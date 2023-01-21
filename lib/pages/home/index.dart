@@ -56,14 +56,6 @@ class _HomePageState extends State<HomePage> {
         bottomNavigationBar: homeNavigationBar(),
         body: _centerPage(),
       );
-      // switch (_selectedPage) {
-      //   case 0:
-      //     return
-      //   case 1:
-      //     return const ProfilePage();
-      //   default:
-      //     return const ProfilePage();
-      // }
     });
   }
 
