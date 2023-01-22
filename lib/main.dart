@@ -4,7 +4,6 @@ import 'package:comms_flutter/pages/login/index.dart';
 import 'package:comms_flutter/pages/splash/index.dart';
 import 'package:comms_flutter/services/navigation_service.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:comms_flutter/constants.dart';
 import 'package:comms_flutter/models/account.dart';
