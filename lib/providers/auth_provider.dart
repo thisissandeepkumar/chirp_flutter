@@ -4,6 +4,7 @@ import 'package:comms_flutter/constants.dart';
 import 'package:comms_flutter/models/account.dart';
 import 'package:comms_flutter/services/navigation_service.dart';
 import 'package:comms_flutter/services/prefs_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -26,12 +27,14 @@ class AuthProvider extends ChangeNotifier {
   Future<void> login(String email, String password) async {
     authStatus = AuthStatus.isAuthenticating;
     notifyListeners();
+    var fcmToken = await FirebaseMessaging.instance.getToken();
     try {
       http.Response response =
           await http.post(Uri.parse("$chatCoreHost/api/account/v1/login"),
               body: jsonEncode({
                 "email": email,
                 "password": password,
+                "fcmToken": fcmToken,
               }),
               headers: {
             "Content-Type": "application/json",
