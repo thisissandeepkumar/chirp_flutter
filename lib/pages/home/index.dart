@@ -1,10 +1,17 @@
+import 'dart:convert';
+import 'dart:math';
+
+import 'package:comms_flutter/constants.dart';
 import 'package:comms_flutter/models/account.dart';
+import 'package:comms_flutter/models/chatroom.dart';
 import 'package:comms_flutter/pages/profile/index.dart';
 import 'package:comms_flutter/providers/auth_provider.dart';
 import 'package:comms_flutter/providers/chatroom_provider.dart';
 import 'package:comms_flutter/services/navigation_service.dart';
+import 'package:comms_flutter/widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,6 +23,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late double width;
   late double height;
+  late BuildContext mainContext;
 
   late AuthProvider authProvider;
   late ChatroomProvider chatroomProvider;
@@ -51,6 +59,7 @@ class _HomePageState extends State<HomePage> {
     return Builder(builder: (BuildContext innerContext) {
       authProvider = Provider.of<AuthProvider>(innerContext);
       chatroomProvider = Provider.of<ChatroomProvider>(innerContext);
+      mainContext = innerContext;
       return Scaffold(
         appBar: homeAppBar(),
         bottomNavigationBar: homeNavigationBar(),
@@ -130,6 +139,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   PreferredSizeWidget homeAppBar() {
+    TextEditingController emailFieldController = TextEditingController();
     return AppBar(
       title: const Text(
         "Messages",
@@ -137,8 +147,80 @@ class _HomePageState extends State<HomePage> {
       actions: [
         IconButton(
           onPressed: () async {
-            NavigationService.instance.navigateToReplacement("login");
-            await authProvider.logout();
+            return showDialog(
+              context: mainContext,
+              builder: (mainContext) {
+                return AlertDialog(
+                  title: const Text("Start Chat"),
+                  content: StatefulBuilder(
+                    builder: (mainContext, StateSetter alertStateSetter) {
+                      return TextFormField(
+                        controller: emailFieldController,
+                        keyboardType: TextInputType.emailAddress,
+                      );
+                    },
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () async {
+                        SnackBarService.instance.context = mainContext;
+                        if (emailFieldController.text.isNotEmpty) {
+                          try {
+                            http.Response response = await http.post(
+                              Uri.parse("$chatCoreHost/api/chatroom/v1"),
+                              headers: {
+                                "Content-Type": "application/json",
+                                "Authorization": "Bearer ${authProvider.token}",
+                              },
+                              body: jsonEncode({
+                                "email": emailFieldController.text,
+                              }),
+                            );
+                            if (response.statusCode == 201) {
+                              chatroomProvider.chatrooms.add(
+                                Chatroom.fromJson(jsonDecode(response.body)
+                                    as Map<String, dynamic>),
+                              );
+                              chatroomProvider.setCurrentChatroom(
+                                chatroomProvider.chatrooms.last,
+                              );
+                              NavigationService.instance.navigateTo("chatroom");
+                            } else if (response.statusCode == 404) {
+                              SnackBarService.instance
+                                  .showFailureSnackBar("User not found");
+                            } else if (response.statusCode == 409) {
+                              chatroomProvider.setCurrentChatroom(
+                                chatroomProvider.chatrooms.firstWhere(
+                                    (element) =>
+                                        element.id ==
+                                        jsonDecode(response.body)["chatroom"]
+                                            ["_id"]),
+                              );
+                              NavigationService.instance.navigateTo("chatroom");
+                            }
+                          } catch (e) {
+                            ScaffoldMessenger.of(mainContext).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  e.toString(),
+                                ),
+                              ),
+                            );
+                          }
+                        } else {
+                          SnackBarService.instance.context = mainContext;
+                          SnackBarService.instance.showFailureSnackBar(
+                              "Please enter an email address");
+                        }
+                      },
+                      child: const Text(
+                        "Initiate",
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
           },
           icon: const Icon(
             Icons.message_rounded,
