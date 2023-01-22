@@ -3,6 +3,7 @@ import 'package:comms_flutter/services/navigation_service.dart';
 import 'package:comms_flutter/services/prefs_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -55,9 +56,31 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
-        child: Text('Comms'),
+        child: SizedBox(
+          height: 180,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                'Comms',
+                style: GoogleFonts.caveat(
+                  fontSize: 65,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                "Built with ❤️ by Sandeep Kumar",
+                style: GoogleFonts.caveat(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              )
+            ],
+          ),
+        ),
       ),
     );
   }

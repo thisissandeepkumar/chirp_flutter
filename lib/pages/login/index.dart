@@ -3,6 +3,7 @@ import 'package:comms_flutter/services/navigation_service.dart';
 import 'package:comms_flutter/widgets/snackbar.dart';
 import 'package:comms_flutter/widgets/text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -106,8 +107,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       );
                     }
                   },
-                  child: const Text("Login"),
+                  child: AuthProvider.instance.authStatus ==
+                          AuthStatus.isAuthenticating
+                      ? const CircularProgressIndicator()
+                      : const Text("Login"),
                 ),
+                Text(
+                  "Built with ❤️ by Sandeep Kumar",
+                  style: GoogleFonts.caveat(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
               ],
             ),
           ),

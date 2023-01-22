@@ -141,91 +141,99 @@ class _HomePageState extends State<HomePage> {
   PreferredSizeWidget homeAppBar() {
     TextEditingController emailFieldController = TextEditingController();
     return AppBar(
-      title: const Text(
-        "Messages",
+      title: Text(
+        _selectedPage == 0 ? "Messages" : "Profile",
       ),
       actions: [
-        IconButton(
-          onPressed: () async {
-            return showDialog(
-              context: mainContext,
-              builder: (mainContext) {
-                return AlertDialog(
-                  title: const Text("Start Chat"),
-                  content: StatefulBuilder(
-                    builder: (mainContext, StateSetter alertStateSetter) {
-                      return TextFormField(
-                        controller: emailFieldController,
-                        keyboardType: TextInputType.emailAddress,
+        _selectedPage == 0
+            ? IconButton(
+                tooltip: "Start Chat",
+                onPressed: () async {
+                  return showDialog(
+                    context: mainContext,
+                    builder: (mainContext) {
+                      return AlertDialog(
+                        title: const Text("Start Chat"),
+                        content: StatefulBuilder(
+                          builder: (mainContext, StateSetter alertStateSetter) {
+                            return TextFormField(
+                              controller: emailFieldController,
+                              keyboardType: TextInputType.emailAddress,
+                            );
+                          },
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () async {
+                              SnackBarService.instance.context = mainContext;
+                              if (emailFieldController.text.isNotEmpty) {
+                                try {
+                                  http.Response response = await http.post(
+                                    Uri.parse("$chatCoreHost/api/chatroom/v1"),
+                                    headers: {
+                                      "Content-Type": "application/json",
+                                      "Authorization":
+                                          "Bearer ${authProvider.token}",
+                                    },
+                                    body: jsonEncode({
+                                      "email": emailFieldController.text,
+                                    }),
+                                  );
+                                  if (response.statusCode == 201) {
+                                    chatroomProvider.chatrooms.add(
+                                      Chatroom.fromJson(
+                                          jsonDecode(response.body)
+                                              as Map<String, dynamic>),
+                                    );
+                                    chatroomProvider.setCurrentChatroom(
+                                      chatroomProvider.chatrooms.last,
+                                    );
+                                    NavigationService.instance
+                                        .navigateTo("chatroom");
+                                  } else if (response.statusCode == 404) {
+                                    SnackBarService.instance
+                                        .showFailureSnackBar("User not found");
+                                  } else if (response.statusCode == 409) {
+                                    chatroomProvider.setCurrentChatroom(
+                                      chatroomProvider.chatrooms.firstWhere(
+                                          (element) =>
+                                              element.id ==
+                                              jsonDecode(response.body)[
+                                                  "chatroom"]["_id"]),
+                                    );
+                                    NavigationService.instance
+                                        .navigateTo("chatroom");
+                                  }
+                                } catch (e) {
+                                  ScaffoldMessenger.of(mainContext)
+                                      .showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        e.toString(),
+                                      ),
+                                    ),
+                                  );
+                                }
+                              } else {
+                                SnackBarService.instance.context = mainContext;
+                                SnackBarService.instance.showFailureSnackBar(
+                                    "Please enter an email address");
+                              }
+                            },
+                            child: const Text(
+                              "Initiate",
+                            ),
+                          ),
+                        ],
                       );
                     },
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () async {
-                        SnackBarService.instance.context = mainContext;
-                        if (emailFieldController.text.isNotEmpty) {
-                          try {
-                            http.Response response = await http.post(
-                              Uri.parse("$chatCoreHost/api/chatroom/v1"),
-                              headers: {
-                                "Content-Type": "application/json",
-                                "Authorization": "Bearer ${authProvider.token}",
-                              },
-                              body: jsonEncode({
-                                "email": emailFieldController.text,
-                              }),
-                            );
-                            if (response.statusCode == 201) {
-                              chatroomProvider.chatrooms.add(
-                                Chatroom.fromJson(jsonDecode(response.body)
-                                    as Map<String, dynamic>),
-                              );
-                              chatroomProvider.setCurrentChatroom(
-                                chatroomProvider.chatrooms.last,
-                              );
-                              NavigationService.instance.navigateTo("chatroom");
-                            } else if (response.statusCode == 404) {
-                              SnackBarService.instance
-                                  .showFailureSnackBar("User not found");
-                            } else if (response.statusCode == 409) {
-                              chatroomProvider.setCurrentChatroom(
-                                chatroomProvider.chatrooms.firstWhere(
-                                    (element) =>
-                                        element.id ==
-                                        jsonDecode(response.body)["chatroom"]
-                                            ["_id"]),
-                              );
-                              NavigationService.instance.navigateTo("chatroom");
-                            }
-                          } catch (e) {
-                            ScaffoldMessenger.of(mainContext).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  e.toString(),
-                                ),
-                              ),
-                            );
-                          }
-                        } else {
-                          SnackBarService.instance.context = mainContext;
-                          SnackBarService.instance.showFailureSnackBar(
-                              "Please enter an email address");
-                        }
-                      },
-                      child: const Text(
-                        "Initiate",
-                      ),
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-          icon: const Icon(
-            Icons.message_rounded,
-          ),
-        ),
+                  );
+                },
+                icon: const Icon(
+                  Icons.message_rounded,
+                ),
+              )
+            : const SizedBox.shrink(),
       ],
     );
   }
