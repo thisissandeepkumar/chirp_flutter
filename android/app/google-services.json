@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1092006366982",
+    "project_id": "comms-10c29",
+    "storage_bucket": "comms-10c29.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1092006366982:android:ec0e932a654d95baf01887",
+        "android_client_info": {
+          "package_name": "in.sandeepkumar.comms"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1092006366982-pk8f0ms1gkg9k98smu10i393vf57n9ij.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5yFiftYtr98eZ6BRcTGYA5KZzyYV7lt0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1092006366982-pk8f0ms1gkg9k98smu10i393vf57n9ij.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -38,6 +38,7 @@ dependencies:
   shared_preferences: ^2.0.15
   socket_io_client: ^2.0.1
   objectid: ^2.1.0
+  firebase_core: ^2.4.1
 
 dev_dependencies:
   flutter_test:

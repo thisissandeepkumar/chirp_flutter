@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.comms_flutter">
+    package="in.sandeepkumar.comms">
    <application
         android:label="comms_flutter"
         android:name="${applicationName}"
