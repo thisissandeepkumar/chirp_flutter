@@ -87,6 +87,16 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> logout() async {
+    http.Response _ = await http.post(
+      Uri.parse("$chatCoreHost/api/account/v1/logout"),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token"
+      },
+      body: jsonEncode({
+        "token": await FirebaseMessaging.instance.getToken(),
+      }),
+    );
     authStatus = AuthStatus.isUnauthenticated;
     currentUser = null;
     token = null;
