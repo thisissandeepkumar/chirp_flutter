@@ -158,6 +158,9 @@ class _HomePageState extends State<HomePage> {
                             return TextFormField(
                               controller: emailFieldController,
                               keyboardType: TextInputType.emailAddress,
+                              decoration: const InputDecoration(
+                                labelText: "Email",
+                              ),
                             );
                           },
                         ),
