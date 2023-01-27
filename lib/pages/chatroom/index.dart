@@ -51,9 +51,10 @@ class _ChatroomPageState extends State<ChatroomPage> {
   }
 
   @override
-  void deactivate() {
-    super.deactivate();
+  void dispose() {
+    super.dispose();
     MessageProvider.instance.destroyChatroom();
+    socket.dispose();
   }
 
   @override
