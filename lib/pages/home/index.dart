@@ -8,6 +8,7 @@ import 'package:comms_flutter/providers/auth_provider.dart';
 import 'package:comms_flutter/providers/chatroom_provider.dart';
 import 'package:comms_flutter/services/navigation_service.dart';
 import 'package:comms_flutter/widgets/snackbar.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
@@ -29,13 +30,43 @@ class _HomePageState extends State<HomePage> {
 
   late TextEditingController searchController;
 
+  RemoteMessage? initialMessage;
+
   int _selectedPage = 0;
+
+  Future<void> handleNotifications(RemoteMessage? remoteMessage) async {
+    if (initialMessage == null) {
+      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+        initialMessage = message;
+      });
+    }
+    if (initialMessage != null) {
+      switch (initialMessage!.data["route"]) {
+        case "/chatroom":
+          await ChatroomProvider.instance.fetchChatrooms();
+          ChatroomProvider.instance.setCurrentChatroom(chatroomProvider
+              .chatrooms
+              .where(
+                  (element) => element.id == initialMessage!.data["chatroomId"])
+              .first);
+          NavigationService.instance.navigateTo("chatroom");
+          break;
+      }
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     searchController = TextEditingController();
     ChatroomProvider.instance.fetchChatrooms();
+
+    // Notifications Handling
+    FirebaseMessaging.onMessage.listen((RemoteMessage remoteMessage) {
+      // TODO: Handle Foreground Notifications
+    });
+    FirebaseMessaging.instance.getInitialMessage().then(handleNotifications);
+    FirebaseMessaging.onMessageOpenedApp.listen(handleNotifications);
   }
 
   @override
