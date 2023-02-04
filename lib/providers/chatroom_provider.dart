@@ -82,7 +82,6 @@ class ChatroomProvider extends ChangeNotifier {
 
   void setCurrentChatroom(Chatroom chatroom) {
     currentChatroom = chatroom;
-    print(currentChatroom!.id);
     socket!.emit("join", {
       "chatroomId": currentChatroom!.id,
     });
