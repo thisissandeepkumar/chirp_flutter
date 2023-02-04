@@ -4,6 +4,7 @@ import 'package:comms_flutter/constants.dart';
 import 'package:comms_flutter/models/account.dart';
 import 'package:comms_flutter/services/navigation_service.dart';
 import 'package:comms_flutter/services/prefs_service.dart';
+import 'package:comms_flutter/widgets/snackbar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -45,8 +46,12 @@ class AuthProvider extends ChangeNotifier {
         token = data["token"];
         authStatus = AuthStatus.isAuthenticated;
         await CommsSharedPreferenceService.setString("token", token!);
+      } else {
+        SnackBarService.instance.showFailureSnackBar(response.body);
+        authStatus = AuthStatus.isUnauthenticated;
       }
     } catch (e) {
+      SnackBarService.instance.showFailureSnackBar(e.toString());
       authStatus = AuthStatus.isError;
     }
     notifyListeners();
