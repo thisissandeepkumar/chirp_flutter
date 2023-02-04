@@ -65,7 +65,7 @@ class _SplashScreenState extends State<SplashScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                'Comms',
+                'Chirp',
                 style: GoogleFonts.caveat(
                   fontSize: 65,
                   fontWeight: FontWeight.bold,
