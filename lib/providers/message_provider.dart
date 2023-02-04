@@ -12,6 +12,8 @@ enum MessageState { idle, loading, loaded, error }
 class MessageProvider extends ChangeNotifier {
   List<Message> messages = [];
   MessageState state = MessageState.idle;
+  int page = 1;
+  final int size = 25;
 
   static MessageProvider instance = MessageProvider();
 
@@ -24,7 +26,7 @@ class MessageProvider extends ChangeNotifier {
       try {
         http.Response response = await http.get(
             Uri.parse(
-                "$chatCoreHost/api/message/v1?chatroomId=${ChatroomProvider.instance.currentChatroom!.id}"),
+                "$chatCoreHost/api/message/v1?chatroomId=${ChatroomProvider.instance.currentChatroom!.id}&size=${size.toString()}&page=1"),
             headers: {
               "Content-Type": "application/json",
               "Authorization": "Bearer ${AuthProvider.instance.token}"
@@ -49,10 +51,36 @@ class MessageProvider extends ChangeNotifier {
   void destroyChatroom() {
     messages = [];
     state = MessageState.idle;
+    page = 1;
   }
 
   void onMessageReceived(Message message) {
     messages.insert(0, message);
     notifyListeners();
+  }
+
+  Future<void> fetchMore() async {
+    try {
+      http.Response response = await http.get(
+          Uri.parse(
+              "$chatCoreHost/api/message/v1?chatroomId=${ChatroomProvider.instance.currentChatroom!.id}&size=${size.toString()}&page=${++page}"),
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer ${AuthProvider.instance.token}"
+          });
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body) as List<dynamic>;
+        var tempMessages = data.map((e) => Message.fromJSON(e)).toList();
+        messages.addAll(tempMessages);
+        messages.sort((b, a) => a.createdAt!.compareTo(b.createdAt!));
+        notifyListeners();
+      } else {
+        state = MessageState.error;
+        notifyListeners();
+      }
+    } catch (e) {
+      state = MessageState.error;
+      notifyListeners();
+    }
   }
 }
