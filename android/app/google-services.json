@@ -1,37 +1,37 @@
 {
   "project_info": {
-    "project_number": "1092006366982",
-    "project_id": "comms-10c29",
-    "storage_bucket": "comms-10c29.appspot.com"
+    "project_number": "461694526804",
+    "project_id": "chirp-e5bed",
+    "storage_bucket": "chirp-e5bed.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1092006366982:android:ec0e932a654d95baf01887",
+        "mobilesdk_app_id": "1:461694526804:android:e4c3ac581d168f7ea8d4c1",
         "android_client_info": {
-          "package_name": "in.sandeepkumar.comms"
+          "package_name": "in.sandeepkumar.chirp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1092006366982-pk8f0ms1gkg9k98smu10i393vf57n9ij.apps.googleusercontent.com",
+          "client_id": "461694526804-kj4obcvht3pdqt2mu7421hpoim61purk.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyC5yFiftYtr98eZ6BRcTGYA5KZzyYV7lt0"
+          "current_key": "AIzaSyBNDBDrKHsDAQ54AVkWOV20RDyGhIHgGKc"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1092006366982-pk8f0ms1gkg9k98smu10i393vf57n9ij.apps.googleusercontent.com",
+              "client_id": "461694526804-kj4obcvht3pdqt2mu7421hpoim61purk.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "1092006366982-39eet68jtmj4i4mdiqkcujiair5s66rq.apps.googleusercontent.com",
+              "client_id": "461694526804-1d6hh09stsqvg2m35dg4eat4pphtv1qp.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
                 "bundle_id": "in.sandeepkumar.commms"
