@@ -35,16 +35,14 @@ class _ChatroomPageState extends State<ChatroomPage> {
         await MessageProvider.instance.fetchMore();
       }
     });
-    ChatroomProvider.instance.listenToEvent("message", (data) {
-      eventCount++;
-      messageProvider.onMessageReceived(Message.fromJSON(data));
-    });
   }
 
   @override
   void dispose() {
     MessageProvider.instance.destroyChatroom();
     ChatroomProvider.instance.leaveChatroom();
+    scrollController.dispose();
+    textContentController.dispose();
     super.dispose();
   }
 
@@ -163,14 +161,14 @@ class _ChatroomPageState extends State<ChatroomPage> {
                                         "chatroomId": chatroomProvider
                                             .currentChatroom!.id,
                                       });
-                                      messageProvider.onMessageReceived(Message(
-                                        chatroomId: ObjectId.fromTimestamp(
-                                                DateTime.now())
-                                            .hexString,
-                                        senderId: authProvider.currentUser!.id,
-                                        type: MessageType.text,
-                                        textContent: textContentController.text,
-                                      ));
+                                      // messageProvider.onMessageReceived(Message(
+                                      //   chatroomId: ObjectId.fromTimestamp(
+                                      //           DateTime.now())
+                                      //       .hexString,
+                                      //   senderId: authProvider.currentUser!.id,
+                                      //   type: MessageType.text,
+                                      //   textContent: textContentController.text,
+                                      // ));
                                       textContentController.clear();
                                     }
                                   },
