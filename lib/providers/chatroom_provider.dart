@@ -44,6 +44,10 @@ class ChatroomProvider extends ChangeNotifier {
     socket!.on(event, onEventHandler);
   }
 
+  Future<void> emitEvent(String event, dynamic data) async {
+    socket!.emit(event, data);
+  }
+
   Future<void> fetchChatrooms() async {
     state = ChatroomState.loading;
 
@@ -83,7 +87,6 @@ class ChatroomProvider extends ChangeNotifier {
       "chatroomId": currentChatroom!.id,
     });
     currentChatroom = null;
-    notifyListeners();
   }
 
   void destroySocketConnection() {

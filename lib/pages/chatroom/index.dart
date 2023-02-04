@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:comms_flutter/constants.dart';
 import 'package:comms_flutter/models/account.dart';
 import 'package:comms_flutter/models/message.dart';
 import 'package:comms_flutter/providers/auth_provider.dart';
@@ -9,7 +6,6 @@ import 'package:comms_flutter/providers/message_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:objectid/objectid.dart';
 import 'package:provider/provider.dart';
-import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class ChatroomPage extends StatefulWidget {
   const ChatroomPage({super.key});
@@ -22,8 +18,6 @@ class _ChatroomPageState extends State<ChatroomPage> {
   late AuthProvider authProvider;
   late ChatroomProvider chatroomProvider;
   late MessageProvider messageProvider;
-
-  late io.Socket socket;
 
   late TextEditingController textContentController;
   ScrollController scrollController = ScrollController();
@@ -41,25 +35,7 @@ class _ChatroomPageState extends State<ChatroomPage> {
         await MessageProvider.instance.fetchMore();
       }
     });
-    print({
-      "Authorization": "Bearer ${AuthProvider.instance.token}",
-      "roomid": ChatroomProvider.instance.currentChatroom!.id,
-    });
-    socket = io.io(
-      chatCoreHost,
-      io.OptionBuilder()
-          .setTransports(["websocket"])
-          .disableAutoConnect()
-          .setExtraHeaders({
-            "Authorization": "Bearer ${AuthProvider.instance.token}",
-            "roomid": ChatroomProvider.instance.currentChatroom!.id,
-            "test1":
-                jsonEncode(ChatroomProvider.instance.currentChatroom!.toJson())
-          })
-          .build(),
-    );
-    socket.connect();
-    socket.on("message", (data) {
+    ChatroomProvider.instance.listenToEvent("message", (data) {
       eventCount++;
       messageProvider.onMessageReceived(Message.fromJSON(data));
     });
@@ -68,9 +44,7 @@ class _ChatroomPageState extends State<ChatroomPage> {
   @override
   void dispose() {
     MessageProvider.instance.destroyChatroom();
-    socket.disconnect();
-    socket.dispose();
-    socket.destroy();
+    ChatroomProvider.instance.leaveChatroom();
     super.dispose();
   }
 
@@ -181,10 +155,13 @@ class _ChatroomPageState extends State<ChatroomPage> {
                                 child: IconButton(
                                   onPressed: () async {
                                     if (textContentController.text.isNotEmpty) {
-                                      socket.emit("message", {
+                                      ChatroomProvider.instance
+                                          .emitEvent("message", {
                                         "type": "text",
                                         "textContent":
-                                            textContentController.text
+                                            textContentController.text,
+                                        "chatroomId": chatroomProvider
+                                            .currentChatroom!.id,
                                       });
                                       messageProvider.onMessageReceived(Message(
                                         chatroomId: ObjectId.fromTimestamp(
