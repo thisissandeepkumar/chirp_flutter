@@ -1,4 +1,6 @@
 PODS:
+  - awesome_notifications (0.0.1):
+    - FlutterMacOS
   - Firebase/CoreOnly (10.3.0):
     - FirebaseCore (= 10.3.0)
   - Firebase/Messaging (10.3.0):
@@ -66,6 +68,7 @@ PODS:
     - FlutterMacOS
 
 DEPENDENCIES:
+  - awesome_notifications (from `Flutter/ephemeral/.symlinks/plugins/awesome_notifications/macos`)
   - firebase_core (from `Flutter/ephemeral/.symlinks/plugins/firebase_core/macos`)
   - firebase_messaging (from `Flutter/ephemeral/.symlinks/plugins/firebase_messaging/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
@@ -85,6 +88,8 @@ SPEC REPOS:
     - PromisesObjC
 
 EXTERNAL SOURCES:
+  awesome_notifications:
+    :path: Flutter/ephemeral/.symlinks/plugins/awesome_notifications/macos
   firebase_core:
     :path: Flutter/ephemeral/.symlinks/plugins/firebase_core/macos
   firebase_messaging:
@@ -97,6 +102,7 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/shared_preferences_macos/macos
 
 SPEC CHECKSUMS:
+  awesome_notifications: 428f5c15a700b117418aed09e29c21c5806fcf69
   Firebase: f92fc551ead69c94168d36c2b26188263860acd9
   firebase_core: 651a84636254f758b9b9367f27bef0801a3855a2
   firebase_messaging: 9ac6988071c9d8c151d74a49e50491a55abaeac8
