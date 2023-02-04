@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:comms_flutter/constants.dart';
 import 'package:comms_flutter/models/account.dart';
 import 'package:comms_flutter/models/message.dart';
@@ -39,16 +41,24 @@ class _ChatroomPageState extends State<ChatroomPage> {
         await MessageProvider.instance.fetchMore();
       }
     });
+    print({
+      "Authorization": "Bearer ${AuthProvider.instance.token}",
+      "roomid": ChatroomProvider.instance.currentChatroom!.id,
+    });
     socket = io.io(
-      "$chatCoreHost?room=${ChatroomProvider.instance.currentChatroom!.id}",
+      websocketHost,
       io.OptionBuilder()
           .setTransports(["websocket"])
           .disableAutoConnect()
           .setExtraHeaders({
             "Authorization": "Bearer ${AuthProvider.instance.token}",
+            "roomid": ChatroomProvider.instance.currentChatroom!.id,
+            "test1":
+                jsonEncode(ChatroomProvider.instance.currentChatroom!.toJson())
           })
           .build(),
     );
+    print(socket);
     socket.connect();
     socket.on("message", (data) {
       eventCount++;
@@ -58,9 +68,11 @@ class _ChatroomPageState extends State<ChatroomPage> {
 
   @override
   void dispose() {
-    super.dispose();
     MessageProvider.instance.destroyChatroom();
+    socket.disconnect();
     socket.dispose();
+    socket.destroy();
+    super.dispose();
   }
 
   @override
