@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:comms_flutter/constants.dart';
 import 'package:comms_flutter/models/account.dart';
 import 'package:comms_flutter/models/chatroom.dart';
@@ -33,6 +34,7 @@ class _HomePageState extends State<HomePage> {
   RemoteMessage? initialMessage;
 
   int _selectedPage = 0;
+  int notificationIdCount = 0;
 
   Future<void> handleNotifications(RemoteMessage? remoteMessage) async {
     if (initialMessage == null) {
@@ -63,7 +65,16 @@ class _HomePageState extends State<HomePage> {
 
     // Notifications Handling
     FirebaseMessaging.onMessage.listen((RemoteMessage remoteMessage) {
-      // TODO: Handle Foreground Notifications
+      if (remoteMessage.data["chatroomId"] !=
+          ChatroomProvider.instance.currentChatroom?.id) {
+        AwesomeNotifications().createNotification(
+          content: NotificationContent(
+              id: ++notificationIdCount,
+              channelKey: 'basic_channel',
+              title: remoteMessage.notification!.title,
+              body: remoteMessage.notification!.body),
+        );
+      }
     });
     FirebaseMessaging.instance.getInitialMessage().then(handleNotifications);
     FirebaseMessaging.onMessageOpenedApp.listen(handleNotifications);
