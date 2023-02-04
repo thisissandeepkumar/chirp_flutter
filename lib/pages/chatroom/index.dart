@@ -46,7 +46,7 @@ class _ChatroomPageState extends State<ChatroomPage> {
       "roomid": ChatroomProvider.instance.currentChatroom!.id,
     });
     socket = io.io(
-      websocketHost,
+      chatCoreHost,
       io.OptionBuilder()
           .setTransports(["websocket"])
           .disableAutoConnect()
@@ -58,7 +58,6 @@ class _ChatroomPageState extends State<ChatroomPage> {
           })
           .build(),
     );
-    print(socket);
     socket.connect();
     socket.on("message", (data) {
       eventCount++;
