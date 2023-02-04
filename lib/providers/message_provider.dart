@@ -68,7 +68,6 @@ class MessageProvider extends ChangeNotifier {
             "Content-Type": "application/json",
             "Authorization": "Bearer ${AuthProvider.instance.token}"
           });
-      print(response.body);
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body) as List<dynamic>;
         var tempMessages = data.map((e) => Message.fromJSON(e)).toList();
