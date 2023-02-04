@@ -33,6 +33,12 @@ class _ChatroomPageState extends State<ChatroomPage> {
     super.initState();
     textContentController = TextEditingController();
     MessageProvider.instance.fetchMessages();
+    scrollController.addListener(() async {
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        await MessageProvider.instance.fetchMore();
+      }
+    });
     socket = io.io(
       "$chatCoreHost?room=${ChatroomProvider.instance.currentChatroom!.id}",
       io.OptionBuilder()
