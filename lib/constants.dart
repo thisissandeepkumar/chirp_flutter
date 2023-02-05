@@ -6,3 +6,8 @@ final Map<String, dynamic> mediaConstraints = {
     'facingMode': 'user',
   }
 };
+Map<String, dynamic> stunConfiguration = {
+  "iceServers": [
+    {"url": "stun:stun.l.google.com:19302"},
+  ]
+};
