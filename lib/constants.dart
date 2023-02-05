@@ -7,7 +7,10 @@ final Map<String, dynamic> mediaConstraints = {
   }
 };
 Map<String, dynamic> stunConfiguration = {
+  // "sdpSemantics": "unified-plan",
   "iceServers": [
-    {"url": "stun:stun.l.google.com:19302"},
+    // {"url": "stun4.l.google.com:19302"},
+    {"url": "stun2.l.google.com:19302"},
+    {"url": "stun3.l.google.com:19302"},
   ]
 };

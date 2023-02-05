@@ -31,7 +31,10 @@ class _CallPageState extends State<CallPage> {
   @override
   void initState() {
     initRenderers();
-    _getUserMedia();
+    // _getUserMedia();
+    _createPeerConnection().then((pc) {
+      _peerConnection = pc;
+    });
     super.initState();
   }
 
@@ -44,6 +47,7 @@ class _CallPageState extends State<CallPage> {
   // Methods to deal with WebRTC
   void initRenderers() async {
     await _localVideoRenderer.initialize();
+    await _remoteVideoRenderer.initialize();
   }
 
   Future<MediaStream> _getUserMedia() async {
@@ -70,9 +74,8 @@ class _CallPageState extends State<CallPage> {
     };
     _localStream = await _getUserMedia();
 
-    RTCPeerConnection pc =
-        await createPeerConnection(stunConfiguration, offerSdpConstraints);
-    pc.addStream(_localStream);
+    var pc = await createPeerConnection(stunConfiguration, offerSdpConstraints);
+    await pc.addStream(_localStream);
 
     pc.onIceCandidate = (e) {
       if (e.candidate != null) {
@@ -96,12 +99,15 @@ class _CallPageState extends State<CallPage> {
     pc.onRemoveStream = (stream) {
       print("Remove Stream: " + stream.id);
     };
-
-    _peerConnection = pc;
     return pc;
   }
 
-  _createOffer() async {}
+  _createOffer() async {
+    RTCSessionDescription description =
+        await _peerConnection!.createOffer({'offerToReceiveVideo': 1});
+    var session = description.sdp.toString();
+    // print(session)
+  }
 
   // Main Build
   @override
@@ -130,7 +136,10 @@ class _CallPageState extends State<CallPage> {
             isVideoRendered
                 ? Expanded(
                     flex: 7,
-                    child: RTCVideoView(_localVideoRenderer),
+                    child: RTCVideoView(
+                      _localVideoRenderer,
+                      mirror: true,
+                    ),
                   )
                 : const CircularProgressIndicator(),
             isRemoteVideoRendered
