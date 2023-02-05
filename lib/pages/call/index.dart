@@ -13,7 +13,11 @@ class CallPage extends StatefulWidget {
 }
 
 class _CallPageState extends State<CallPage> {
+  late StateSetter builderSetState;
+
   final _localVideoRenderer = RTCVideoRenderer();
+
+  bool isVideoRendered = false;
 
   @override
   void initState() {
@@ -37,6 +41,9 @@ class _CallPageState extends State<CallPage> {
     MediaStream stream =
         await navigator.mediaDevices.getUserMedia(mediaConstraints);
     _localVideoRenderer.srcObject = stream;
+    builderSetState(() {
+      isVideoRendered = true;
+    });
   }
 
   void disposeRenderers() async {
@@ -58,14 +65,20 @@ class _CallPageState extends State<CallPage> {
   }
 
   Widget _mainUI() {
-    return Builder(builder: (BuildContext innerContext) {
+    return StatefulBuilder(
+        builder: (BuildContext innerContext, StateSetter innerSetState) {
+      builderSetState = innerSetState;
       return Scaffold(
         appBar: AppBar(
           title: const Text('Call'),
         ),
         body: Column(
           children: [
-            const Text('Call'),
+            isVideoRendered
+                ? Expanded(
+                    child: RTCVideoView(_localVideoRenderer),
+                  )
+                : const CircularProgressIndicator(),
           ],
         ),
       );
