@@ -23,8 +23,8 @@ class _CallPageState extends State<CallPage> {
   }
 
   @override
-  void dispose() async {
-    await _localVideoRenderer.dispose();
+  void dispose() {
+    disposeRenderers();
     super.dispose();
   }
 
@@ -37,6 +37,10 @@ class _CallPageState extends State<CallPage> {
     MediaStream stream =
         await navigator.mediaDevices.getUserMedia(mediaConstraints);
     _localVideoRenderer.srcObject = stream;
+  }
+
+  void disposeRenderers() async {
+    await _localVideoRenderer.dispose();
   }
 
   // Main Build
