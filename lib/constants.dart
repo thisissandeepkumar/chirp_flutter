@@ -1,2 +1,2 @@
 // Production
-const String chatCoreHost = "https://dev.chats.sandeepkumar.in";
+const String chatCoreHost = "https://chats.sandeepkumar.in";
