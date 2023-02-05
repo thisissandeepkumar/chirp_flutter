@@ -16,8 +16,10 @@ class _CallPageState extends State<CallPage> {
   late StateSetter builderSetState;
 
   final _localVideoRenderer = RTCVideoRenderer();
+  final _remoteVideoRenderer = RTCVideoRenderer();
 
   bool isVideoRendered = false;
+  bool isRemoteVideoRendered = false;
 
   @override
   void initState() {
@@ -76,7 +78,14 @@ class _CallPageState extends State<CallPage> {
           children: [
             isVideoRendered
                 ? Expanded(
+                    flex: 7,
                     child: RTCVideoView(_localVideoRenderer),
+                  )
+                : const CircularProgressIndicator(),
+            isRemoteVideoRendered
+                ? Expanded(
+                    flex: 3,
+                    child: RTCVideoView(_remoteVideoRenderer),
                   )
                 : const CircularProgressIndicator(),
           ],
