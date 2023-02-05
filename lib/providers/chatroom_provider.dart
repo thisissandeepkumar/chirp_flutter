@@ -2,9 +2,12 @@ import 'dart:convert';
 
 import 'package:comms_flutter/constants.dart';
 import 'package:comms_flutter/models/chatroom.dart';
+import 'package:comms_flutter/models/message.dart';
 import 'package:comms_flutter/providers/auth_provider.dart';
+import 'package:comms_flutter/providers/message_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:socket_io_client/socket_io_client.dart' as io;
 
 enum ChatroomState {
   idle,
@@ -18,9 +21,38 @@ class ChatroomProvider extends ChangeNotifier {
   Chatroom? currentChatroom;
   ChatroomState state = ChatroomState.idle;
 
+  io.Socket? socket;
+
   static ChatroomProvider instance = ChatroomProvider();
 
   ChatroomProvider();
+
+  Future<void> establishSocketConnection() async {
+    socket = io.io(
+      chatCoreHost,
+      io.OptionBuilder()
+          .setTransports(["websocket"])
+          .disableAutoConnect()
+          .setExtraHeaders({
+            // ignore: prefer_interpolation_to_compose_strings
+            "Authorization": "Bearer " + AuthProvider.instance.token!,
+          })
+          .build(),
+    );
+    socket!.connect();
+    socket!.on("message", (data) {
+      MessageProvider.instance.onMessageReceived(Message.fromJSON(data));
+    });
+  }
+
+  Future<void> listenToEvent(
+      String event, dynamic Function(dynamic data) onEventHandler) async {
+    socket!.on(event, onEventHandler);
+  }
+
+  Future<void> emitEvent(String event, dynamic data) async {
+    socket!.emit(event, data);
+  }
 
   Future<void> fetchChatrooms() async {
     state = ChatroomState.loading;
@@ -50,6 +82,23 @@ class ChatroomProvider extends ChangeNotifier {
 
   void setCurrentChatroom(Chatroom chatroom) {
     currentChatroom = chatroom;
+    socket!.emit("join", {
+      "chatroomId": currentChatroom!.id,
+    });
+    notifyListeners();
+  }
+
+  void leaveChatroom() {
+    socket!.emit("leave", {
+      "chatroomId": currentChatroom!.id,
+    });
+    currentChatroom = null;
+  }
+
+  void destroySocketConnection() {
+    socket!.disconnect();
+    socket!.dispose();
+    socket = null;
     notifyListeners();
   }
 }

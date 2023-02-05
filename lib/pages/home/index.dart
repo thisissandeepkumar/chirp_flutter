@@ -61,20 +61,21 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     searchController = TextEditingController();
+    ChatroomProvider.instance.establishSocketConnection();
     ChatroomProvider.instance.fetchChatrooms();
 
     // Notifications Handling
     FirebaseMessaging.onMessage.listen((RemoteMessage remoteMessage) {
-      if (remoteMessage.data["chatroomId"] !=
-          ChatroomProvider.instance.currentChatroom?.id) {
-        AwesomeNotifications().createNotification(
-          content: NotificationContent(
-              id: ++notificationIdCount,
-              channelKey: 'basic_channel',
-              title: remoteMessage.notification!.title,
-              body: remoteMessage.notification!.body),
-        );
-      }
+      // if (remoteMessage.data["chatroomId"] !=
+      //     ChatroomProvider.instance.currentChatroom?.id) {
+      //   AwesomeNotifications().createNotification(
+      //     content: NotificationContent(
+      //         id: ++notificationIdCount,
+      //         channelKey: 'basic_channel',
+      //         title: remoteMessage.notification!.title,
+      //         body: remoteMessage.notification!.body),
+      //   );
+      // }
     });
     FirebaseMessaging.instance.getInitialMessage().then(handleNotifications);
     FirebaseMessaging.onMessageOpenedApp.listen(handleNotifications);
